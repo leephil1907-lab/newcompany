@@ -4,7 +4,7 @@ import { Sprout, ArrowUpRight, Mail, MapPin } from "lucide-react";
 const groups = [
   { title: "Services", links: [{ label: "Farm Planning", href: "/services/farm-planning-and-setup" }, { label: "Crop Production", href: "/services/crop-production-consultancy" }, { label: "Soil Management", href: "/services/soil-management-and-fertility" }, { label: "Farmer Training", href: "/services/farmer-training-and-extension" }, { label: "Agribusiness Advisory", href: "/services/agribusiness-and-investment-advisory" }] },
   { title: "Company", links: [{ label: "About Us", href: "/about" }, { label: "Projects", href: "/projects" }, { label: "Insights", href: "/insights" }, { label: "Contact", href: "/contact" }] },
-  { title: "Explore", links: [{ label: "AgroBridge Academy", href: "/academy" }, { label: "Marketplace", href: "/marketplace" }, { label: "Investment Advisory", href: "/ventures" }, { label: "Client Workspace", href: "/workspace" }] }
+  { title: "Get in touch", links: [{ label: "Contact Us", href: "/contact" }, { label: "Book a Consultation", href: "/contact" }, { label: "All Services", href: "/services" }, { label: "Project Partnerships", href: "/projects" }] }
 ];
 
 export function SiteFooter() {
