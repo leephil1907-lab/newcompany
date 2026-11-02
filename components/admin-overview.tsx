@@ -1,7 +1,7 @@
 "use client";
 import { useEffect,useState } from "react";
 import Link from "next/link";
-import { Activity,ClipboardList,GraduationCap,Leaf,LoaderCircle,RefreshCw,Sprout,Users } from "lucide-react";
+import { Activity,ClipboardList,Leaf,LoaderCircle,RefreshCw,Sprout,Users } from "lucide-react";
 type Data={metrics:{inquiries:{total:number;new:number;reviewing:number;completed:number};plans:number;cropCases:{total:number;pending:number};clients:number;appointments:{total:number;requested:number}};recent:{id:string;name:string;email:string;service_slug:string|null;status:string;created_at:string}[]};
 export function AdminOverview(){
  const [data,setData]=useState<Data|null>(null);const [error,setError]=useState("");const [busy,setBusy]=useState(true);
