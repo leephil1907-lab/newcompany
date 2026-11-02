@@ -8,6 +8,6 @@ export async function POST(request:Request) {
   try {
     const parsed=schema.safeParse(await request.json()); if(!parsed.success) return NextResponse.json({error:"Invalid chat message."},{status:400});
     const reply=await assistantReply(parsed.data.messages);
-    return NextResponse.json({reply,mode:process.env.AI_API_KEY?"ai_provider":"guided_fallback"});
+    return NextResponse.json({reply,mode:process.env.AI_API_KEY&&process.env.AI_BASE_URL&&process.env.AI_MODEL?"ai_provider":"guided_fallback"});
   } catch(error){console.error("Assistant request failed:",error instanceof Error?error.message:error);return NextResponse.json({error:"The assistant is temporarily unavailable. Please use the consultation form."},{status:503});}
 }
