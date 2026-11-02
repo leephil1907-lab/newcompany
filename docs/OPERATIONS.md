@@ -8,7 +8,7 @@
 - Client workspace for enquiries, appointments, farm briefs, crop-health cases and Academy progress.
 - Appointment requests with staff confirmation and confirmation email.
 - Farm planning intake and structured client briefs.
-- Crop-health reports with JPG, PNG or WebP image storage in PostgreSQL (5 MB maximum).
+- Crop-health reports with JPG, PNG or WebP image storage in PostgreSQL (4 MB maximum; large photos are resized in the browser before upload, and the file type is verified from its contents).
 - Optional vision-model preliminary triage when an OpenAI-compatible provider is configured.
 - Human crop-health review queue with expert notes and client email notification.
 - Staff dashboard, role management, enquiry pipeline, appointment management and content publishing.
@@ -16,7 +16,7 @@
 - Farmer training programmes, public registration, capacity checks, attendance records and scheduled pre-programme reminders.
 - Farm Assistant with a guided fallback and optional model-backed replies.
 - Newsletter double opt-in, signed confirmation and unsubscribe links.
-- Hourly 24-hour enquiry follow-up job.
+- Daily enquiry follow-up job (09:00 UTC) for enquiries older than 24 hours that have not yet been followed up.
 - Daily training programme reminder job for registered participants within two days of a published programme.
 
 ## Required environment variables

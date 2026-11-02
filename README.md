@@ -22,6 +22,7 @@ A mobile-first agricultural consultancy website and client operations platform f
 - Signed JWT sessions with jose and bcryptjs
 - Zod server-side validation
 - Resend transactional email API
+- Node.js 22 (pinned in `.nvmrc` and `package.json` engines)
 
 ## Public website
 
@@ -63,9 +64,9 @@ A mobile-first agricultural consultancy website and client operations platform f
 
 ## Environment setup
 
-Install dependencies and create a local environment file:
+Use Node.js 22 (`nvm use` reads `.nvmrc`). Install the exact dependency versions from `package-lock.json` and create a local environment file:
 
-    npm install
+    npm ci
     cp .env.example .env.local
 
 Create a PostgreSQL database (Neon is supported), copy its pooled connection string into DATABASE_URL, and generate a private session secret (for example, `openssl rand -base64 48`). Then apply the schema and seed the Academy:
@@ -87,6 +88,14 @@ Quality checks:
     npm run lint
     npm run build
 
+End-to-end tests run against a running app and a **local** database (they create and then delete their own records, and refuse to run against a remote database):
+
+    npm run build && npm start
+    # in a second terminal, with DATABASE_URL, CRON_SECRET, ADMIN_EMAIL and ADMIN_PASSWORD set:
+    npm run test:e2e
+
+GitHub Actions runs the typecheck, lint and build plus the end-to-end suite (against a disposable PostgreSQL service) on every push and pull request to `main`. Dependabot opens grouped weekly pull requests for minor and patch dependency updates.
+
 ## Neon database setup
 
 1. Create a new Neon project named AgroBridge Consult.
@@ -104,7 +113,7 @@ The repository contains the schema and migration scripts; creating a Neon projec
 - RESEND_API_KEY: transactional email API key.
 - EMAIL_FROM: sender on a verified domain.
 - ADMIN_NOTIFICATION_EMAIL: staff notification inbox.
-- CRON_SECRET: secret for scheduled enquiry follow-ups.
+- CRON_SECRET: secret for the scheduled jobs in `vercel.json` (daily enquiry follow-ups at 09:00 UTC and programme reminders at 08:00 UTC).
 
 ## Optional integrations
 
@@ -127,5 +136,5 @@ The repository contains the schema and migration scripts; creating a Neon projec
 - Project case studies and testimonials must be based on real completed work and permission.
 - Fees are agreed after the scope and deliverables are reviewed; no unverified price promises are published.
 - Current rate limiting is process-local and must be replaced with a shared limiter before scaling horizontally.
-- Crop photos are stored in PostgreSQL for the initial release; private object storage is recommended as volume grows.
+- Crop photos are stored in PostgreSQL for the initial release; private object storage is recommended as volume grows. Large photos are resized in the browser before upload (4 MB maximum) to stay within hosting request limits.
 - The newsletter uses double opt-in confirmation and signed unsubscribe links. Campaign broadcasting is not included in the current release.
