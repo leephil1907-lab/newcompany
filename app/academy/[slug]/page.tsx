@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound,redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { EnrollButton,LessonCompleteButton } from "@/components/course-enroll-button";
