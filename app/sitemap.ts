@@ -18,6 +18,7 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap>{
   urls.push(...projects.map(x=>({url:base+"/projects/"+x.slug,lastModified:new Date(x.updated_at),changeFrequency:"monthly" as const,priority:0.6})));
   urls.push(...articles.map(x=>({url:base+"/insights/"+x.slug,lastModified:new Date(x.updated_at),changeFrequency:"weekly" as const,priority:0.65})));
   urls.push(...courses.map(x=>({url:base+"/academy/"+x.slug,lastModified:new Date(x.updated_at),changeFrequency:"monthly" as const,priority:0.55})));
+  urls.push(...programmes.map(x=>({url:base+"/programmes/"+x.slug,lastModified:new Date(x.updated_at),changeFrequency:"monthly" as const,priority:0.55})));
  }catch{}
  return urls;
 }
