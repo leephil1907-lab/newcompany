@@ -7,7 +7,7 @@ export async function assistantReply(messages: ChatMessage[]) {
   if (key && base && model) {
     const response = await fetch(base.replace(/\/$/,"") + "/chat/completions", {
       method:"POST", headers:{ Authorization:`Bearer ${key}`, "Content-Type":"application/json" },
-      body:JSON.stringify({ model, temperature:0.35, max_tokens:450, messages:[{role:"system",content:system},...messages.slice(-12)] }), cache:"no-store"
+      body:JSON.stringify({ model, temperature:0.35, max_tokens:450, messages:[{role:"system",content:system},...messages.slice(-12)] }), cache:"no-store", signal:AbortSignal.timeout(12000)
     });
     if (!response.ok) throw new Error("The configured AI provider did not respond successfully.");
     const data = await response.json() as { choices?: { message?: { content?: string } }[] };
