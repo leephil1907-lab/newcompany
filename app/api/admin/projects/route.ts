@@ -1,0 +1,8 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { getDb } from "@/lib/db";
+import { requireStaff } from "@/lib/auth";
+const schema=z.object({title:z.string().trim().min(3).max(160),slug:z.string().trim().regex(/^[a-z0-9-]+$/),summary:z.string().trim().min(10).max(500),description:z.string().max(10000).optional(),location:z.string().max(160).optional(),clientType:z.string().max(120).optional(),serviceArea:z.string().max(160).optional(),imageUrl:z.url().optional().or(z.literal("")),published:z.boolean().default(false)});
+export const runtime="nodejs";
+export async function GET(){const staff=await requireStaff();if(!staff)return NextResponse.json({error:"Staff access required."},{status:403});try{return NextResponse.json({items:await getDb()`SELECT * FROM projects ORDER BY created_at DESC`});}catch{return NextResponse.json({error:"Unable to load projects."},{status:503});}}
+export async function POST(request:Request){const staff=await requireStaff();if(!staff)return NextResponse.json({error:"Staff access required."},{status:403});const parsed=schema.safeParse(await request.json());if(!parsed.success)return NextResponse.json({error:"Invalid project details."},{status:400});const d=parsed.data;try{const rows=await getDb()`INSERT INTO projects(title,slug,summary,description,location,client_type,service_area,image_url,published) VALUES(${d.title},${d.slug},${d.summary},${d.description??""},${d.location??""},${d.clientType??""},${d.serviceArea??""},${d.imageUrl||null},${d.published}) RETURNING id,title,slug,published`;return NextResponse.json({ok:true,item:rows[0]},{status:201});}catch{return NextResponse.json({error:"Unable to create project. Confirm the slug is unique."},{status:503});}}
