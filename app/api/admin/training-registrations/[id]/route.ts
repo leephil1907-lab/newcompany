@@ -1,0 +1,5 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { getDb } from "@/lib/db";
+import { requireStaff } from "@/lib/auth";
+export async function PATCH(request:Request,{params}:{params:Promise<{id:string}>}){const staff=await requireStaff();if(!staff)return NextResponse.json({error:"Staff access required."},{status:403});const parsed=z.object({attendanceStatus:z.enum(["registered","attended","absent","cancelled"])}).safeParse(await request.json());if(!parsed.success)return NextResponse.json({error:"Invalid attendance status."},{status:400});const {id}=await params;try{const rows=await getDb()`UPDATE training_registrations SET attendance_status=${parsed.data.attendanceStatus},attended_at=CASE WHEN ${parsed.data.attendanceStatus}='attended' THEN NOW() ELSE attended_at END WHERE id=${id} RETURNING id,attendance_status`;if(!rows[0])return NextResponse.json({error:"Registration not found."},{status:404});return NextResponse.json({ok:true,item:rows[0]});}catch{return NextResponse.json({error:"Unable to update attendance."},{status:503});}}
