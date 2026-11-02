@@ -237,6 +237,7 @@ CREATE TABLE IF NOT EXISTS training_registrations (
   attendance_status TEXT NOT NULL DEFAULT 'registered' CHECK (attendance_status IN ('registered','attended','absent','cancelled')),
   registered_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   attended_at TIMESTAMPTZ,
+  reminder_sent_at TIMESTAMPTZ,
   UNIQUE(program_id,email)
 );
 CREATE INDEX IF NOT EXISTS training_registrations_program_idx ON training_registrations(program_id,registered_at DESC);
