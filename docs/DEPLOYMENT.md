@@ -2,14 +2,23 @@
 
 ## Build and deploy
 
-- Use Node.js 22.
-- Install with npm install.
+- Use Node.js 22 (pinned in `.nvmrc` and the `engines` field of `package.json`, which Vercel also reads).
+- Install with `npm ci` so the exact versions in `package-lock.json` are used.
 - Run npm run typecheck.
 - Run npm run lint.
 - Run npm run build.
+- GitHub Actions runs these checks and the end-to-end suite on every push and pull request; keep `main` green before deploying.
 - Deploy the Next.js application to a Node.js-compatible host.
 - Add agrobridgeconsult.com and www.agrobridgeconsult.com and choose one canonical host.
 - Configure HTTPS and redirect the non-canonical host.
+
+## Vercel plan and scheduled jobs
+
+- Vercel's Hobby plan is for non-commercial personal use only; a business site such as this one needs a Pro (or Enterprise) plan.
+- `vercel.json` schedules two jobs, both daily so they also deploy on Hobby: enquiry follow-ups at 09:00 UTC (10:00 in Lagos) and programme reminders at 08:00 UTC. Hobby may run a job at any time within its scheduled hour.
+- On Pro you can run follow-ups more often (for example hourly, `0 * * * *`). The job emails every enquiry older than 24 hours that has not yet been followed up, so a daily schedule never skips anyone.
+- Vercel calls each job with `Authorization: Bearer $CRON_SECRET`, so `CRON_SECRET` must be set in the Vercel project environment.
+- Vercel Functions accept request bodies up to 4.5 MB; crop photos are therefore resized in the browser and capped at 4 MB by the API.
 
 ## Environment
 
