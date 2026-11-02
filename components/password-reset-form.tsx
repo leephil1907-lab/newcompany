@@ -1,0 +1,9 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowUpRight,LoaderCircle } from "lucide-react";
+export function PasswordResetForm({token=""}:{token?:string}){
+ const router=useRouter();const [status,setStatus]=useState("");const [error,setError]=useState("");const [busy,setBusy]=useState(false);
+ async function submit(form:FormData){setBusy(true);setError("");setStatus("");const endpoint=token?"/api/auth/reset-password":"/api/auth/forgot-password";const body=token?{token,password:form.get("password")}:{email:form.get("email")};try{const r=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw new Error(d.error);setStatus(d.message||"If an account exists, a reset link will be sent.");if(token){(document.getElementById("password-reset-form") as HTMLFormElement)?.reset();router.push("/login?reset=success");}}catch(e){setError(e instanceof Error?e.message:"Unable to process request.");}finally{setBusy(false);}}
+ return <form id="password-reset-form" action={submit} className="space-y-5">{token?<label className="block"><span className="field-label">New password</span><input type="password" name="password" minLength={10} required className="field" placeholder="At least 10 characters"/></label>:<label className="block"><span className="field-label">Account email</span><input type="email" name="email" required className="field" placeholder="you@example.com"/></label>}{error&&<p role="alert" className="text-sm text-red-700">{error}</p>}{status&&<p role="status" className="rounded-xl bg-[#edf6e9] p-4 text-sm text-[#1b5e20]">{status}</p>}<button disabled={busy} className="btn btn-primary w-full">{busy?<LoaderCircle className="animate-spin"/>:<>Continue <ArrowUpRight size={17}/></>}</button></form>;
+}
