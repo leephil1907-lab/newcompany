@@ -5,7 +5,7 @@ export const dynamic="force-dynamic";
 export default async function sitemap():Promise<MetadataRoute.Sitemap>{
  const base="https://agrobridgeconsult.com";
  const pages=["","/about","/services","/projects","/insights","/academy","/contact","/book-consultation","/farm-planner","/crop-health"];
- const urls:MetadataRoute.Sitemap=pages.map(path=>({url:base+path,lastModified:new Date(),changeFrequency:"monthly",priority:path===""?1:0.7}));
+ const urls:MetadataRoute.Sitemap=pages.map(path=>({url:base+path,lastModified:new Date(),changeFrequency:"monthly" as const,priority:path===""?1:0.7}));
  urls.push(...services.map(service=>({url:base+"/services/"+service.slug,lastModified:new Date(),changeFrequency:"monthly" as const,priority:0.65})));
  try{
   const sql=getDb();
