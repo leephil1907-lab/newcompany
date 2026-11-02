@@ -13,9 +13,11 @@
 - Human crop-health review queue with expert notes and client email notification.
 - Staff dashboard, role management, enquiry pipeline, appointment management and content publishing.
 - Academy courses, lesson publishing, enrolment and progress tracking.
+- Farmer training programmes, public registration, capacity checks, attendance records and scheduled pre-programme reminders.
 - Farm Assistant with a guided fallback and optional model-backed replies.
 - Newsletter double opt-in, signed confirmation and unsubscribe links.
 - Hourly 24-hour enquiry follow-up job.
+- Daily training programme reminder job for registered participants within two days of a published programme.
 
 ## Required environment variables
 
