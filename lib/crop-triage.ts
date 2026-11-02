@@ -6,7 +6,7 @@ export async function preliminaryCropTriage(input:CropInput,image?:{base64:strin
  const content:Array<Record<string,unknown>>=[{type:"text",text:prompt}];
  if(image)content.push({type:"image_url",image_url:{url:`data:${image.mime};base64,${image.base64}`,detail:"low"}});
  try{
-  const response=await fetch(base.replace(/\/$/,"")+"/chat/completions",{method:"POST",headers:{Authorization:`Bearer ${key}`,"Content-Type":"application/json"},body:JSON.stringify({model,temperature:0.2,max_tokens:300,messages:[{role:"user",content}]}),cache:"no-store"});
+  const response=await fetch(base.replace(/\/$/,"")+"/chat/completions",{method:"POST",headers:{Authorization:`Bearer ${key}`,"Content-Type":"application/json"},body:JSON.stringify({model,temperature:0.2,max_tokens:300,messages:[{role:"user",content}]}),cache:"no-store",signal:AbortSignal.timeout(15000)});
   if(!response.ok)return null;
   const data=await response.json() as {choices?:{message?:{content?:string}}[]};
   return data.choices?.[0]?.message?.content?.trim()||null;
