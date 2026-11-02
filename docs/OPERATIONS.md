@@ -69,7 +69,7 @@ Crop triage is deliberately preliminary. It must not produce pesticide prescript
 - consultant: can access staff review and operations pages.
 - admin: full staff access, including role management.
 
-Use the database carefully when changing roles. The initial administrator is created with the one-time admin bootstrap command.
+The application reads the current role from PostgreSQL on each authenticated request, so role demotion takes effect immediately. Password reset increments the account session version and invalidates existing sessions. The initial administrator is created with the one-time admin bootstrap command.
 
 ## Operational limitations before scale
 
