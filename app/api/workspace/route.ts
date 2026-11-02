@@ -9,7 +9,7 @@ export async function GET(){
   const [inquiries,plans,cases,enrollments,appointments]=await Promise.all([
    sql`SELECT id,service_slug,status,created_at FROM inquiries WHERE user_id=${user.id} ORDER BY created_at DESC LIMIT 20`,
    sql`SELECT id,location,enterprise_type,crops_or_animals,status,created_at FROM farm_plans WHERE user_id=${user.id} ORDER BY created_at DESC LIMIT 20`,
-   sql`SELECT id,crop,location,status,urgency,created_at FROM crop_cases WHERE user_id=${user.id} ORDER BY created_at DESC LIMIT 20`,
+   sql`SELECT id,crop,location,status,urgency,expert_notes,created_at FROM crop_cases WHERE user_id=${user.id} ORDER BY created_at DESC LIMIT 20`,
    sql`SELECT e.id,c.title,c.slug,e.enrolled_at FROM enrollments e JOIN courses c ON c.id=e.course_id WHERE e.user_id=${user.id} ORDER BY e.enrolled_at DESC`,
    sql`SELECT id,preferred_date,preferred_time,meeting_type,status,service_slug FROM appointments WHERE user_id=${user.id} ORDER BY preferred_date DESC LIMIT 20`
   ]);
