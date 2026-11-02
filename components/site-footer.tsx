@@ -4,7 +4,7 @@ import { ArrowUpRight,Mail,MapPin } from "lucide-react";
 import { NewsletterForm } from "@/components/newsletter-form";
 const groups=[
  {title:"Services",links:[["Farm Planning","/services/farm-planning-and-setup"],["Crop Production","/services/crop-production-consultancy"],["Soil Management","/services/soil-management-and-fertility"],["Farmer Training","/services/farmer-training-and-extension"],["Agribusiness Advisory","/services/agribusiness-and-investment-advisory"]]},
- {title:"Company",links:[["About Us","/about"],["Projects","/projects"],["Insights","/insights"],["Academy","/academy"],["Contact","/contact"]]},
+ {title:"Company",links:[["About Us","/about"],["Projects","/projects"],["Insights","/insights"],["Academy","/academy"],["Pricing","/pricing"],["FAQs","/faq"],["Contact","/contact"]]},
  {title:"Get in touch",links:[["Book a Consultation","/book-consultation"],["Farm Planning Intake","/farm-planner"],["Crop Health Review","/crop-health"],["Client Workspace","/workspace"]]}
 ];
 export function SiteFooter(){return <footer className="bg-[#102d17] text-white"><div className="container py-16">
