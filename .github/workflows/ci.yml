@@ -10,6 +10,9 @@ concurrency:
   group: agrobridge-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -19,12 +22,71 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
+          cache: npm
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Run typecheck
         run: npm run typecheck
       - name: Run lint
         run: npm run lint
       - name: Build application
         run: npm run build
+
+  e2e:
+    name: end-to-end
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: agrobridge
+          POSTGRES_PASSWORD: agrobridge
+          POSTGRES_DB: agrobridge_consult
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U agrobridge -d agrobridge_consult"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Throwaway values for the disposable CI database only.
+      DATABASE_URL: postgres://agrobridge:agrobridge@localhost:5432/agrobridge_consult
+      SESSION_SECRET: ci-only-session-secret-0123456789abcdef0123456789abcdef
+      CRON_SECRET: ci-only-cron-secret
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: ci-only-admin-password
+      ADMIN_NAME: CI Administrator
+      BASE_URL: http://localhost:3000
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Prepare database
+        run: |
+          npm run db:migrate
+          npm run db:seed
+          npm run admin:create
+      - name: Build application
+        run: npm run build
+      - name: Start application
+        run: |
+          nohup npm run start > server.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl -sf http://localhost:3000/api/health > /dev/null; then echo "App is ready"; exit 0; fi
+            sleep 2
+          done
+          echo "App did not become healthy"; cat server.log; exit 1
+      - name: Run end-to-end tests
+        run: npm run test:e2e
+      - name: Show server log
+        if: always()
+        run: cat server.log || true
