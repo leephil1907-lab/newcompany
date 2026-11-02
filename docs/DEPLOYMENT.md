@@ -48,6 +48,8 @@ Optional integrations:
 - /crop-health stores a crop case and image; staff can view the image and add expert notes.
 - /admin dashboard, staff-only APIs and administrator-only user role management.
 - /admin/projects, /admin/articles and /admin/courses publishing controls.
+- /admin/programmes creates programmes and manages attendee registration and attendance.
+- /programmes and programme registration; daily reminder cron sends pre-event emails.
 - Academy course enrolment, lesson access and progress.
 - /insights, /projects, /faq and /pricing.
 - Newsletter confirmation and unsubscribe links.
