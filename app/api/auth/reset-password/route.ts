@@ -14,7 +14,7 @@ export async function POST(request:Request){
   await sql.begin(async tx=>{
    const rows=await tx`SELECT id,user_id FROM password_reset_tokens WHERE token_hash=${hash} AND used_at IS NULL AND expires_at>NOW() FOR UPDATE`;
    if(!rows[0])throw new Error("RESET_TOKEN_INVALID");
-   await tx`UPDATE users SET password_hash=${passwordHash},updated_at=NOW() WHERE id=${rows[0].user_id}`;
+   await tx`UPDATE users SET password_hash=${passwordHash},session_version=session_version+1,updated_at=NOW() WHERE id=${rows[0].user_id}`;
    await tx`UPDATE password_reset_tokens SET used_at=NOW() WHERE id=${rows[0].id}`;
    await tx`UPDATE password_reset_tokens SET used_at=NOW() WHERE user_id=${rows[0].user_id} AND used_at IS NULL`;
   });
