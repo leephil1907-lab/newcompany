@@ -23,6 +23,8 @@ Optional integrations:
 
 ## Database and administrator
 
+For a fresh Neon database, create a project named AgroBridge Consult, create/select the `agrobridge_consult` database, and copy the pooled connection string from Neon Connect into `DATABASE_URL`. Keep the URL in environment secrets, never in source control. Generate `SESSION_SECRET` with a secure random generator such as `openssl rand -base64 48`.
+
 1. Run npm run db:migrate against the production database.
 2. Run npm run db:seed.
 3. Set ADMIN_EMAIL, ADMIN_PASSWORD and optionally ADMIN_NAME for the one-time bootstrap.
