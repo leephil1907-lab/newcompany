@@ -7,7 +7,7 @@ export async function sendEmail(input: EmailInput): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
   if (!key || !from) return false;
-  const response = await fetch("https://api.resend.com/emails", { method:"POST", headers:{ Authorization:`Bearer ${key}`, "Content-Type":"application/json" }, body:JSON.stringify({ from, to:[input.to], subject:input.subject, html:input.html, text:input.text }), cache:"no-store" });
+  const response = await fetch("https://api.resend.com/emails", { method:"POST", headers:{ Authorization:`Bearer ${key}`, "Content-Type":"application/json" }, body:JSON.stringify({ from, to:[input.to], subject:input.subject, html:input.html, text:input.text }), cache:"no-store", signal:AbortSignal.timeout(15000) });
   if (!response.ok) {
     const message = await response.text();
     console.error("Email provider error:", response.status, message.slice(0,500));
