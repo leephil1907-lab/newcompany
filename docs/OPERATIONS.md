@@ -1,39 +1,45 @@
 # AgroBridge Consult — Operations Runbook
 
-## Platform capabilities
+## Platform modules
 
-- Public consultancy website, 12 service detail pages, projects and insights.
-- Consultation requests stored in PostgreSQL with email acknowledgement.
-- Client accounts, signed sessions and client workspace.
+- Public consultancy website with 12 service pages, projects, insights, FAQ and engagement information.
+- Consultation enquiries stored in PostgreSQL with client and staff email notifications.
+- Client registration, sign-in, sign-out and one-time password reset links.
+- Client workspace for enquiries, appointments, farm briefs, crop-health cases and Academy progress.
+- Appointment requests with staff confirmation and confirmation email.
 - Farm planning intake and structured client briefs.
-- Crop-health cases with JPG, PNG or WebP image storage in PostgreSQL (5 MB maximum).
-- Staff review queues for enquiries, farm plans and crop-health cases.
-- Farmer Academy with course enrolment and lesson progress.
-- Admin content publishing for projects, articles and courses.
-- Farm Assistant: guided fallback is available without an AI provider; a configured OpenAI-compatible provider enables model-backed replies.
-- Newsletter capture with consent recorded.
-- Hourly 24-hour follow-up job (requires deployment cron and email credentials).
+- Crop-health reports with JPG, PNG or WebP image storage in PostgreSQL (5 MB maximum).
+- Optional vision-model preliminary triage when an OpenAI-compatible provider is configured.
+- Human crop-health review queue with expert notes and client email notification.
+- Staff dashboard, role management, enquiry pipeline, appointment management and content publishing.
+- Academy courses, lesson publishing, enrolment and progress tracking.
+- Farm Assistant with a guided fallback and optional model-backed replies.
+- Newsletter double opt-in, signed confirmation and unsubscribe links.
+- Hourly 24-hour enquiry follow-up job.
 
 ## Required environment variables
 
-- DATABASE_URL: PostgreSQL connection string. A pooled Neon connection is recommended for application traffic.
+- DATABASE_URL: PostgreSQL connection string. A pooled Neon connection is recommended.
 - SESSION_SECRET: random secret of at least 32 characters.
-- RESEND_API_KEY: Resend API key for email delivery.
-- EMAIL_FROM: sender address on a verified sending domain.
-- ADMIN_NOTIFICATION_EMAIL: recipient for new enquiries and crop cases.
+- RESEND_API_KEY: Resend API key.
+- EMAIL_FROM: sender on a verified sending domain.
+- ADMIN_NOTIFICATION_EMAIL: team notification recipient.
 - CRON_SECRET: bearer secret for the follow-up job.
 
 Optional:
-- AI_API_KEY, AI_BASE_URL, AI_MODEL: OpenAI-compatible provider.
-- NEXT_PUBLIC_WHATSAPP_NUMBER: official business number in international digits without plus sign.
+- AI_API_KEY, AI_BASE_URL, AI_MODEL: OpenAI-compatible chat and vision provider.
+- NEXT_PUBLIC_WHATSAPP_NUMBER: official WhatsApp number in international digits, without plus sign.
+- NEXT_PUBLIC_HERO_VIDEO_URL: optimised hero video URL.
+- NEXT_PUBLIC_SITE_URL: canonical site origin.
 
 ## Database setup
 
 1. Set DATABASE_URL.
 2. Run npm run db:migrate.
 3. Run npm run db:seed.
-4. Create the first staff account with ADMIN_EMAIL, ADMIN_PASSWORD (14+ characters), and optionally ADMIN_NAME, then run npm run admin:create.
-5. Sign in at /login; staff accounts are redirected to /admin.
+4. Set ADMIN_EMAIL, ADMIN_PASSWORD (14+ characters), and optionally ADMIN_NAME.
+5. Run npm run admin:create.
+6. Sign in at /login; staff accounts are redirected to /admin.
 
 The admin bootstrap script promotes the supplied email to the admin role. Run it only with a trusted email and secure password.
 
@@ -41,30 +47,32 @@ The admin bootstrap script promotes the supplied email to the admin role. Run it
 
 1. Verify agrobridgeconsult.com in Resend.
 2. Publish the exact SPF/DKIM records Resend provides.
-3. Configure DMARC for the domain and monitor reports.
+3. Configure DMARC and monitor reports.
 4. Set EMAIL_FROM to an address on the verified domain.
 5. Set ADMIN_NOTIFICATION_EMAIL to the team inbox.
-6. Test enquiry acknowledgement, admin notification, farm-plan receipt, and crop-case notification.
-7. Confirm the deployment platform has enabled the scheduled cron and CRON_SECRET.
+6. Test enquiry acknowledgement, appointment requests, farm-plan receipt, crop-case notification, password reset and newsletter confirmation.
+7. Enable the deployment cron and configure CRON_SECRET.
 
-The application does not report a successful email send if the provider is not configured. Database submissions remain saved even when email delivery is unavailable.
+Database submissions remain saved if email delivery is unavailable. The application does not report successful delivery when the provider is missing or rejects a request.
 
-## AI assistant setup
+## AI assistant and crop triage
 
-The guided assistant works without an external AI credential. For model-backed responses, configure AI_API_KEY, AI_BASE_URL and AI_MODEL. The assistant is instructed to avoid definitive image diagnoses and pesticide prescriptions. Crop-health cases are routed to a human review queue.
+The guided assistant works without an external AI credential. For model-backed chat and optional image triage, configure AI_API_KEY, AI_BASE_URL and AI_MODEL. The configured model must support image input for crop-photo triage.
+
+Crop triage is deliberately preliminary. It must not produce pesticide prescriptions, chemical mixtures or definitive diagnoses. Human review remains the basis for professional recommendations.
 
 ## Staff roles
 
-- client: can access only their own workspace records.
-- consultant: can access staff management pages and review records.
-- admin: full staff access.
+- client: can access only records associated with their account.
+- consultant: can access staff review and operations pages.
+- admin: full staff access, including role management.
 
-Use the database carefully when changing roles. Never expose service credentials in browser code.
+Use the database carefully when changing roles. The initial administrator is created with the one-time admin bootstrap command.
 
-## Operational limitations to address before scale
+## Operational limitations before scale
 
-- Current rate limiting is process-local. Replace it with a shared Redis/Upstash limiter before running multiple server instances or expecting high-volume public traffic.
+- Current rate limiting is process-local. Replace it with a shared Redis/Upstash limiter before running multiple server instances or expecting high public traffic.
 - Crop photos are stored in PostgreSQL bytea. Move them to private object storage with signed URLs if image volume grows.
-- Newsletter capture records consent but does not yet run a full double-opt-in campaign and suppression workflow. Do not use it for bulk marketing until that lifecycle is completed.
-- Admin user management, audit trails, backups and data export should be added before onboarding a large staff team.
-- Farm-planning and crop-health content is an intake and review workflow, not an automated agronomic diagnosis or bankable feasibility report.
+- Newsletter confirmation and unsubscribe are implemented; newsletter campaign composition and sending are not included.
+- Staff activity audit trails, export tooling and automated backup verification should be added before onboarding a large staff team.
+- Farm-planning and crop-health workflows are intake and review processes, not automated agronomic diagnosis or bankable feasibility reports.
