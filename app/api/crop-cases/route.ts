@@ -17,7 +17,7 @@ export async function POST(request:Request) {
       if(!["image/jpeg","image/png","image/webp"].includes(file.type)) return NextResponse.json({error:"Upload a JPG, PNG or WebP crop photo."},{status:400});
       bytes=Buffer.from(await file.arrayBuffer()); mime=file.type; filename=file.name.slice(0,180);
     }
-    const urgency=val(form,"urgency")==="urgent"?"urgent":val(form,"urgency")==="priority"?"priority":"standard";
+    const urgency=val(form,"urgent")==="yes"?"priority":val(form,"urgency")==="urgent"?"urgent":"standard";
     const user=await getSession(); const sql=getDb();
     const [row]=await sql`INSERT INTO crop_cases(user_id,name,email,phone,location,crop,variety,growth_stage,symptoms,affected_area,onset,recent_weather,recent_inputs,image_data,image_mime,image_name,urgency) VALUES(${user?.id??null},${name},${email},${val(form,"phone")},${location},${crop},${val(form,"variety")},${val(form,"growthStage")},${symptoms},${val(form,"affectedArea")},${val(form,"onset")},${val(form,"recentWeather")},${val(form,"recentInputs")},${bytes},${mime},${filename},${urgency}) RETURNING id`;
     const html=emailLayout("New crop-health case",paragraph("A crop-health report has been submitted and needs professional review.")+`<p><b>Client:</b> ${safeText(name)}<br><b>Crop:</b> ${safeText(crop)}<br><b>Location:</b> ${safeText(location)}<br><b>Urgency:</b> ${safeText(urgency)}<br><b>Symptoms:</b> ${safeText(symptoms)}</p>`);
