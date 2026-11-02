@@ -32,6 +32,7 @@ A mobile-first agricultural consultancy website and client operations platform f
 - FAQ and consultancy engagement/pricing information
 - Contact and consultation request form
 - Appointment request booking flow
+- Public farmer training programme pages and registrations
 - Farm planning intake
 - Crop-health photo submission and optional preliminary AI triage
 - Privacy and Terms
@@ -57,6 +58,7 @@ A mobile-first agricultural consultancy website and client operations platform f
 - Client account and role management
 - Project, article and course publishing controls
 - Farmer training programme publishing, registration and attendance management
+- Daily programme reminder emails
 - Course lesson creation and learning progress
 
 ## Environment setup
