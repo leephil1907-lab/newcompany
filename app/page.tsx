@@ -17,8 +17,7 @@ const highlights = [
 export default function HomePage() {
   return <>
     <Reveal><section className="relative isolate min-h-[690px] overflow-hidden bg-[#102d17] text-white">
-      <Image src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2200&q=85" alt="Expansive green agricultural fields at sunrise" fill priority sizes="100vw" className="object-cover opacity-45"/>
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0c2814] via-[#12381dcc] to-[#153a1c55]"/>
+      <HeroMedia videoUrl={process.env.NEXT_PUBLIC_HERO_VIDEO_URL}/>
       <div className="container relative z-10 flex min-h-[690px] items-center py-24">
         <div className="max-w-3xl">
           <span className="eyebrow !text-[#c6e8a8]">Agricultural expertise. Practical growth.</span>
