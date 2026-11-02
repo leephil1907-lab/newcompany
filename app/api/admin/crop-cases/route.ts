@@ -6,7 +6,7 @@ const schema=z.object({id:z.uuid(),status:z.enum(["submitted","reviewing","exper
 export const runtime="nodejs";
 export async function GET() {
   const staff=await requireStaff(); if(!staff) return NextResponse.json({error:"Staff access required."},{status:403});
-  try { const rows=await getDb()`SELECT id,name,email,phone,location,crop,variety,growth_stage,symptoms,affected_area,onset,recent_weather,recent_inputs,image_mime,urgency,status,expert_notes,created_at FROM crop_cases ORDER BY created_at DESC LIMIT 200`; return NextResponse.json({items:rows}); }
+  try { const rows=await getDb()`SELECT id,name,email,phone,location,crop,variety,growth_stage,symptoms,affected_area,onset,recent_weather,recent_inputs,image_mime,triage_summary,urgency,status,expert_notes,created_at FROM crop_cases ORDER BY created_at DESC LIMIT 200`; return NextResponse.json({items:rows}); }
   catch{return NextResponse.json({error:"Unable to load crop cases."},{status:503});}
 }
 export async function PATCH(request:Request) {
