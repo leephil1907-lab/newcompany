@@ -1,0 +1,8 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { getDb } from "@/lib/db";
+import { requireStaff } from "@/lib/auth";
+const schema=z.object({title:z.string().trim().min(3).max(180),slug:z.string().trim().regex(/^[a-z0-9-]+$/),excerpt:z.string().trim().min(10).max(500),body:z.string().trim().min(30).max(30000),category:z.string().max(100).default("General"),coverImage:z.url().optional().or(z.literal("")),published:z.boolean().default(false)});
+export const runtime="nodejs";
+export async function GET(){const staff=await requireStaff();if(!staff)return NextResponse.json({error:"Staff access required."},{status:403});try{return NextResponse.json({items:await getDb()`SELECT * FROM articles ORDER BY created_at DESC`});}catch{return NextResponse.json({error:"Unable to load articles."},{status:503});}}
+export async function POST(request:Request){const staff=await requireStaff();if(!staff)return NextResponse.json({error:"Staff access required."},{status:403});const parsed=schema.safeParse(await request.json());if(!parsed.success)return NextResponse.json({error:"Invalid article details."},{status:400});const d=parsed.data;try{const rows=await getDb()`INSERT INTO articles(title,slug,excerpt,body,category,cover_image,published,published_at) VALUES(${d.title},${d.slug},${d.excerpt},${d.body},${d.category},${d.coverImage||null},${d.published},CASE WHEN ${d.published} THEN NOW() ELSE NULL END) RETURNING id,title,slug,published`;return NextResponse.json({ok:true,item:rows[0]},{status:201});}catch{return NextResponse.json({error:"Unable to create article. Confirm the slug is unique."},{status:503});}}
