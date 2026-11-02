@@ -23,7 +23,7 @@ export default function HomePage() {
           <span className="eyebrow !text-[#c6e8a8]">Agricultural expertise. Practical growth.</span>
           <h1 className="mt-7 text-5xl font-semibold leading-[1.04] tracking-[-.055em] sm:text-6xl lg:text-7xl">Connecting farmers to <span className="text-[#b8df8e]">smarter growth.</span></h1>
           <p className="mt-7 max-w-2xl text-lg leading-8 text-white/80">Expert agricultural consultancy for productive farms, sustainable food systems and stronger agribusinesses.</p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row"><Link href="/contact" className="btn bg-[#b8df8e] text-[#153d1c]">Book a Free Consultation <ArrowUpRight size={18}/></Link><Link href="/services" className="btn border border-white/35 text-white hover:bg-white/10">Explore Our Services <ArrowRight size={17}/></Link></div>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row"><Link href="/book-consultation" className="btn bg-[#b8df8e] text-[#153d1c]">Book a Free Consultation <ArrowUpRight size={18}/></Link><Link href="/services" className="btn border border-white/35 text-white hover:bg-white/10">Explore Our Services <ArrowRight size={17}/></Link></div>
           <div className="mt-14 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/75"><span className="flex items-center gap-2"><CheckCircle2 size={16} className="text-[#b8df8e]"/> Practical field-focused guidance</span><span className="flex items-center gap-2"><CheckCircle2 size={16} className="text-[#b8df8e]"/> Support from planning to market</span></div>
         </div>
       </div>
