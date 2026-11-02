@@ -10,7 +10,8 @@ export async function GET() {
     const [plans]=await sql`SELECT COUNT(*)::int AS total FROM farm_plans`;
     const [cases]=await sql`SELECT COUNT(*)::int AS total,COUNT(*) FILTER(WHERE status='submitted')::int AS pending FROM crop_cases`;
     const [clients]=await sql`SELECT COUNT(*)::int AS total FROM users WHERE role='client'`;
+    const [appointments]=await sql`SELECT COUNT(*)::int AS total,COUNT(*) FILTER(WHERE status='requested')::int AS requested FROM appointments`;
     const recent=await sql`SELECT id,name,email,service_slug,status,created_at FROM inquiries ORDER BY created_at DESC LIMIT 8`;
-    return NextResponse.json({metrics:{inquiries,plans:plans.total,cropCases:cases,clients:clients.total},recent});
+    return NextResponse.json({metrics:{inquiries,plans:plans.total,cropCases:cases,clients:clients.total,appointments},recent});
   } catch(error){console.error("Admin overview failed:",error instanceof Error?error.message:error);return NextResponse.json({error:"Database unavailable."},{status:503});}
 }
