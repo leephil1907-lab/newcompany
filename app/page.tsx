@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { HeroMedia } from "@/components/hero-media";
 import { ArrowRight, ArrowUpRight, CheckCircle2, Sprout, Wheat, Droplets, GraduationCap, Bug, Tractor } from "lucide-react";
 import { services } from "@/lib/services";
 import { Reveal } from "@/components/reveal";
