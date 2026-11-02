@@ -9,7 +9,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://agrobridgeconsult.com"),
   title: { default: "AgroBridge Consult | Connecting Farmers to Smarter Growth", template: "%s | AgroBridge Consult" },
   description: "Practical agricultural consultancy for farm planning, crop production, soil management, farmer training and agribusiness development.",
-  openGraph: { title: "AgroBridge Consult", description: "Connecting Farmers to Smarter Growth.", type: "website" }
+  keywords: ["agricultural consultancy Nigeria","farm planning","crop production consultancy","soil management","farmer training","agribusiness advisory","Lagos agricultural consultant"],
+  creator: "AgroBridge Consult", publisher: "AgroBridge Consult",
+  alternates: { canonical: "/" },
+  openGraph: { title: "AgroBridge Consult", description: "Connecting Farmers to Smarter Growth.", type: "website", url: "https://agrobridgeconsult.com", siteName: "AgroBridge Consult", locale: "en_NG" },
+  twitter: { card: "summary_large_image", title: "AgroBridge Consult", description: "Connecting Farmers to Smarter Growth." }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
