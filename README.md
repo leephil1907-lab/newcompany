@@ -28,7 +28,7 @@ A mobile-first agricultural consultancy website and client operations platform f
 - Home, About, Services and 12 service detail pages
 - Projects and published project profiles
 - Insights and published article pages
-- Farmer Academy and course pages
+- Farmer Academy, course pages and public training programme registrations
 - FAQ and consultancy engagement/pricing information
 - Contact and consultation request form
 - Appointment request booking flow
@@ -46,6 +46,7 @@ A mobile-first agricultural consultancy website and client operations platform f
 - Farm planning briefs
 - Crop-health cases and professional review notes
 - Course enrolment and lesson progress
+- Training programme registration and attendance history
 
 ## Staff operations
 
@@ -55,6 +56,7 @@ A mobile-first agricultural consultancy website and client operations platform f
 - Crop-health case review, optional AI triage summary and expert notes
 - Client account and role management
 - Project, article and course publishing controls
+- Farmer training programme publishing, registration and attendance management
 - Course lesson creation and learning progress
 
 ## Environment setup
