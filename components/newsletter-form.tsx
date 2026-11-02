@@ -1,0 +1,8 @@
+"use client";
+import { useState } from "react";
+import { ArrowRight, LoaderCircle } from "lucide-react";
+export function NewsletterForm(){
+ const [status,setStatus]=useState("");const [busy,setBusy]=useState(false);
+ async function submit(form:FormData){setBusy(true);setStatus("");try{const r=await fetch("/api/newsletter",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:form.get("email"),name:form.get("name"),consent:form.get("consent")==="on"})});const d=await r.json();if(!r.ok)throw new Error(d.error);setStatus(d.message);(document.getElementById("newsletter-form") as HTMLFormElement)?.reset();}catch(e){setStatus(e instanceof Error?e.message:"Unable to subscribe.");}finally{setBusy(false);}}
+ return <form id="newsletter-form" action={submit} className="space-y-3"><input name="name" aria-label="Name (optional)" placeholder="Your name (optional)" className="field !border-white/15 !bg-white/10 !text-white placeholder:!text-white/50"/><div className="flex gap-2"><input name="email" type="email" required aria-label="Email address" placeholder="Email address" className="field min-w-0 !border-white/15 !bg-white/10 !text-white placeholder:!text-white/50"/><button disabled={busy} aria-label="Subscribe" className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[#b8df8e] text-[#153b1d] disabled:opacity-60">{busy?<LoaderCircle className="animate-spin"/>:<ArrowRight/>}</button></div><label className="flex items-start gap-2 text-xs leading-5 text-white/65"><input type="checkbox" name="consent" required className="mt-1 accent-[#b8df8e]"/>I agree to receive agricultural insights and updates. I can unsubscribe at any time.</label>{status&&<p role="status" className="text-xs text-[#d9edc7]">{status}</p>}</form>;
+}
