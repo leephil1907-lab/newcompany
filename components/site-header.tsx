@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, ChevronDown, Sprout, UserRound } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, ChevronDown, UserRound } from "lucide-react";
 
 const links = [{ href: "/", label: "Home" }, { href: "/about", label: "About" }, { href: "/services", label: "Services", children: [{ href: "/services", label: "All Services" }, { href: "/services/farm-planning-and-setup", label: "Farm Planning" }, { href: "/services/crop-production-consultancy", label: "Crop Production" }, { href: "/services/soil-management-and-fertility", label: "Soil Management" }, { href: "/services/pest-and-disease-control", label: "Pest & Disease Support" }, { href: "/services/farmer-training-and-extension", label: "Farmer Training" }] }, { href: "/projects", label: "Projects" }, { href: "/insights", label: "Insights" }, { href: "/academy", label: "Academy" }];
 
@@ -11,8 +12,7 @@ export function SiteHeader() {
   return <header className="sticky top-0 z-50 border-b border-[#e5eae2]/80 bg-[#f7f8f5]/90 backdrop-blur-xl">
     <div className="container flex h-[76px] items-center justify-between gap-6">
       <Link href="/" className="flex items-center gap-3" aria-label="AgroBridge Consult home">
-        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1b5e20] text-white"><Sprout size={23}/></span>
-        <span className="leading-tight"><strong className="block text-[17px] tracking-tight text-[#173d1b]">AgroBridge</strong><span className="text-[10px] font-bold uppercase tracking-[.22em] text-[#71806f]">Consult</span></span>
+        <Image src="/agrobridge-logo.svg" alt="AgroBridge Consult" width={220} height={52} priority className="h-12 w-auto"/>
       </Link>
       <nav className="hidden items-center gap-7 lg:flex">
         {links.map(link => <div key={link.href + link.label} className="group relative">
