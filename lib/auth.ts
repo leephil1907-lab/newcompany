@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { getDb } from "@/lib/db";
 export type SessionUser = { id: string; name: string; email: string; role: "client" | "admin" | "consultant" };
 const COOKIE = "agrobridge_session";
 function secret() {
@@ -8,7 +9,7 @@ function secret() {
   return new TextEncoder().encode(value);
 }
 export async function createSession(user: SessionUser) {
-  const token = await new SignJWT(user).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime("7d").sign(secret());
+  const token = await new SignJWT({ id:user.id }).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime("7d").sign(secret());
   const store = await cookies();
   store.set(COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 7 });
 }
@@ -18,9 +19,12 @@ export async function getSession(): Promise<SessionUser | null> {
     const token = store.get(COOKIE)?.value;
     if (!token) return null;
     const { payload } = await jwtVerify(token, secret());
-    if (typeof payload.id !== "string" || typeof payload.email !== "string" || typeof payload.role !== "string" || typeof payload.name !== "string") return null;
-    if (!["client", "admin", "consultant"].includes(payload.role)) return null;
-    return { id: payload.id, email: payload.email, name: payload.name, role: payload.role as SessionUser["role"] };
+    if (typeof payload.id !== "string") return null;
+    // Database role is authoritative so demoted or disabled accounts lose access immediately.
+    const rows = await getDb()`SELECT id,name,email,role FROM users WHERE id=${payload.id} LIMIT 1`;
+    const user=rows[0];
+    if (!user || !["client","admin","consultant"].includes(user.role)) return null;
+    return { id:String(user.id), name:String(user.name), email:String(user.email), role:user.role as SessionUser["role"] };
   } catch { return null; }
 }
 export async function destroySession() {
