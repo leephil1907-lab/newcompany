@@ -241,3 +241,5 @@ CREATE TABLE IF NOT EXISTS training_registrations (
   UNIQUE(program_id,email)
 );
 CREATE INDEX IF NOT EXISTS training_registrations_program_idx ON training_registrations(program_id,registered_at DESC);
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS session_version INTEGER NOT NULL DEFAULT 0;
