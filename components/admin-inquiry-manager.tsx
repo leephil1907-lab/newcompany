@@ -1,0 +1,13 @@
+"use client";
+import { useEffect,useState } from "react";
+import { LoaderCircle,RefreshCw } from "lucide-react";
+type Item={id:string;name:string;email:string;service_slug:string|null;status:string;message:string;location:string|null;created_at:string};
+const statuses=["new","reviewing","qualified","scheduled","in_progress","completed","closed"];
+export function AdminInquiryManager(){
+ const [items,setItems]=useState<Item[]>([]);const [busy,setBusy]=useState(true);const [error,setError]=useState("");
+ async function load(){setBusy(true);try{const r=await fetch("/api/admin/inquiries");const d=await r.json();if(!r.ok)throw new Error(d.error);setItems(d.items);}catch(e){setError(e instanceof Error?e.message:"Unable to load.");}finally{setBusy(false);}}
+ useEffect(()=>{void load();},[]);
+ async function update(id:string,status:string){const r=await fetch("/api/admin/inquiries",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status})});const d=await r.json();if(!r.ok){setError(d.error);return;}setItems(v=>v.map(x=>x.id===id?{...x,status}:x));}
+ if(busy)return <div className="flex items-center gap-2 py-10 text-sm text-[#71806f]"><LoaderCircle className="animate-spin"/> Loading enquiries…</div>;
+ return <div><div className="mb-5 flex justify-between"><p className="text-sm text-[#68756a]">{items.length} latest enquiries</p><button onClick={load} className="inline-flex items-center gap-2 text-sm font-bold text-[#1b5e20]"><RefreshCw size={15}/> Refresh</button></div>{error&&<p role="alert" className="mb-4 text-sm text-red-700">{error}</p>}<div className="space-y-3">{items.map(item=><article key={item.id} className="rounded-2xl border border-[#e5eae2] bg-white p-5"><div className="flex flex-col justify-between gap-3 sm:flex-row"><div><h3 className="font-bold">{item.name}</h3><a href={"mailto:"+item.email} className="text-sm text-[#1b5e20]">{item.email}</a><p className="mt-1 text-xs text-[#859085]">{item.service_slug?.replaceAll("-"," ")||"General enquiry"} · {new Date(item.created_at).toLocaleString()}</p></div><select value={item.status} onChange={e=>update(item.id,e.target.value)} className="field !w-auto !py-2 text-xs">{statuses.map(s=><option key={s} value={s}>{s.replaceAll("_"," ")}</option>)}</select></div><p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-[#59675b]">{item.message}</p>{item.location&&<p className="mt-2 text-xs text-[#859085]">Location: {item.location}</p>}</article>)}</div>{!items.length&&<p className="rounded-2xl bg-[#f3f6f0] p-8 text-center text-sm text-[#68756a]">No enquiries have been submitted yet.</p>}</div>;
+}
