@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
 import { emailLayout, paragraph, safeText, sendEmail } from "@/lib/email";
+import { preliminaryCropTriage } from "@/lib/crop-triage";
 export const runtime="nodejs";
 const val=(form:FormData,key:string)=>String(form.get(key)||"").trim();
 export async function POST(request:Request) {
@@ -20,7 +21,9 @@ export async function POST(request:Request) {
     const urgency=val(form,"urgent")==="yes"?"priority":val(form,"urgency")==="urgent"?"urgent":"standard";
     const user=await getSession(); const sql=getDb();
     const [row]=await sql`INSERT INTO crop_cases(user_id,name,email,phone,location,crop,variety,growth_stage,symptoms,affected_area,onset,recent_weather,recent_inputs,image_data,image_mime,image_name,urgency) VALUES(${user?.id??null},${name},${email},${val(form,"phone")},${location},${crop},${val(form,"variety")},${val(form,"growthStage")},${symptoms},${val(form,"affectedArea")},${val(form,"onset")},${val(form,"recentWeather")},${val(form,"recentInputs")},${bytes},${mime},${filename},${urgency}) RETURNING id`;
-    const html=emailLayout("New crop-health case",paragraph("A crop-health report has been submitted and needs professional review.")+`<p><b>Client:</b> ${safeText(name)}<br><b>Crop:</b> ${safeText(crop)}<br><b>Location:</b> ${safeText(location)}<br><b>Urgency:</b> ${safeText(urgency)}<br><b>Symptoms:</b> ${safeText(symptoms)}</p>`);
+    const triage = await preliminaryCropTriage({crop,location,growthStage:val(form,"growthStage"),symptoms,weather:val(form,"recentWeather"),recentInputs:val(form,"recentInputs")},bytes&&mime?{base64:bytes.toString("base64"),mime}:undefined);
+    if(triage) await sql`UPDATE crop_cases SET triage_summary=${triage},updated_at=NOW() WHERE id=${row.id}`;
+    const html=emailLayout("New crop-health case",paragraph("A crop-health report has been submitted and needs professional review.")+`<p><b>Client:</b> ${safeText(name)}<br><b>Crop:</b> ${safeText(crop)}<br><b>Location:</b> ${safeText(location)}<br><b>Urgency:</b> ${safeText(urgency)}<br><b>Symptoms:</b> ${safeText(symptoms)}</p>`+(triage?`<p><b>Preliminary AI triage (not a diagnosis):</b><br>${safeText(triage)}</p>`:""));
     await sendEmail({to:process.env.ADMIN_NOTIFICATION_EMAIL||"hello@agrobridgeconsult.com",subject:"Crop-health case submitted for review",html,text:`Crop-health case ${row.id}: ${crop}, ${location}, ${symptoms}`});
     return NextResponse.json({ok:true,id:row.id,message:"Your crop-health case has been submitted for expert review. This is not a confirmed diagnosis."},{status:201});
   } catch(error){console.error("Crop case failed:",error instanceof Error?error.message:error);return NextResponse.json({error:"The crop-health case could not be saved."},{status:503});}
