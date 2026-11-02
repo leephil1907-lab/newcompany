@@ -175,3 +175,24 @@ CREATE TABLE IF NOT EXISTS notification_log (
   status TEXT NOT NULL DEFAULT 'sent',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS appointments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  inquiry_id UUID REFERENCES inquiries(id) ON DELETE SET NULL,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  service_slug TEXT,
+  preferred_date DATE NOT NULL,
+  preferred_time TEXT NOT NULL,
+  meeting_type TEXT NOT NULL DEFAULT 'online' CHECK (meeting_type IN ('online','phone','office','farm_visit')),
+  location TEXT,
+  notes TEXT,
+  status TEXT NOT NULL DEFAULT 'requested' CHECK (status IN ('requested','confirmed','rescheduled','cancelled','completed')),
+  confirmed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS appointments_date_status_idx ON appointments(preferred_date,status);
+CREATE INDEX IF NOT EXISTS appointments_user_idx ON appointments(user_id,created_at DESC);
