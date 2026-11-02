@@ -68,7 +68,7 @@ Install dependencies and create a local environment file:
     npm install
     cp .env.example .env.local
 
-Set DATABASE_URL and SESSION_SECRET, then apply the schema and seed the Academy:
+Create a PostgreSQL database (Neon is supported), copy its pooled connection string into DATABASE_URL, and generate a private session secret (for example, `openssl rand -base64 48`). Then apply the schema and seed the Academy:
 
     npm run db:migrate
     npm run db:seed
@@ -86,6 +86,16 @@ Quality checks:
     npm run typecheck
     npm run lint
     npm run build
+
+## Neon database setup
+
+1. Create a new Neon project named AgroBridge Consult.
+2. Create or select the `agrobridge_consult` database.
+3. Copy the pooled connection string from the Neon Connect panel (the pooled host normally contains `-pooler`).
+4. Paste it into `DATABASE_URL` in `.env.local` and the production host environment. Keep the value private.
+5. Run the migration and seed commands above.
+
+The repository contains the schema and migration scripts; creating a Neon project and setting the connection string are separate account-level setup steps.
 
 ## Required production configuration
 
