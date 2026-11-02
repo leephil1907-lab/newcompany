@@ -206,3 +206,37 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS password_reset_user_idx ON password_reset_tokens(user_id,created_at DESC);
+
+CREATE TABLE IF NOT EXISTS training_programs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  summary TEXT NOT NULL,
+  description TEXT NOT NULL,
+  location TEXT,
+  delivery_mode TEXT NOT NULL DEFAULT 'in_person' CHECK (delivery_mode IN ('in_person','online','hybrid')),
+  start_date DATE NOT NULL,
+  end_date DATE,
+  registration_deadline DATE,
+  capacity INTEGER,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','published','registration_closed','completed','cancelled')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS training_programs_status_date_idx ON training_programs(status,start_date);
+CREATE TABLE IF NOT EXISTS training_registrations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  program_id UUID NOT NULL REFERENCES training_programs(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  organisation TEXT,
+  farmer_group TEXT,
+  notes TEXT,
+  attendance_status TEXT NOT NULL DEFAULT 'registered' CHECK (attendance_status IN ('registered','attended','absent','cancelled')),
+  registered_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  attended_at TIMESTAMPTZ,
+  UNIQUE(program_id,email)
+);
+CREATE INDEX IF NOT EXISTS training_registrations_program_idx ON training_registrations(program_id,registered_at DESC);
