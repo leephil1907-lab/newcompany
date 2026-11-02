@@ -5,7 +5,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Menu, X, ChevronDown, UserRound } from "lucide-react";
 
-const links = [{ href: "/", label: "Home" }, { href: "/about", label: "About" }, { href: "/services", label: "Services", children: [{ href: "/services", label: "All Services" }, { href: "/services/farm-planning-and-setup", label: "Farm Planning" }, { href: "/services/crop-production-consultancy", label: "Crop Production" }, { href: "/services/soil-management-and-fertility", label: "Soil Management" }, { href: "/services/pest-and-disease-control", label: "Pest & Disease Support" }, { href: "/services/farmer-training-and-extension", label: "Farmer Training" }] }, { href: "/projects", label: "Projects" }, { href: "/insights", label: "Insights" }, { href: "/academy", label: "Academy" }];
+const links = [{ href: "/", label: "Home" }, { href: "/about", label: "About" }, { href: "/services", label: "Services", children: [{ href: "/services", label: "All Services" }, { href: "/services/farm-planning-and-setup", label: "Farm Planning" }, { href: "/services/crop-production-consultancy", label: "Crop Production" }, { href: "/services/soil-management-and-fertility", label: "Soil Management" }, { href: "/services/pest-and-disease-control", label: "Pest & Disease Support" }, { href: "/services/farmer-training-and-extension", label: "Farmer Training" }] }, { href: "/projects", label: "Projects" }, { href: "/insights", label: "Insights" }, { href: "/academy", label: "Academy", children: [{ href: "/academy", label: "Online Courses" }, { href: "/programmes", label: "Training Programmes" }] }];
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
