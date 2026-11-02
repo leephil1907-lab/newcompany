@@ -9,7 +9,7 @@ const schema=z.object({name:z.string().trim().min(2).max(120),email:z.email().ma
 export async function POST(request:Request){
  if(!rateLimit("appointment:"+clientKey(request),4,60_000))return NextResponse.json({error:"Please wait before submitting another booking request."},{status:429});
  const parsed=schema.safeParse(await request.json());if(!parsed.success)return NextResponse.json({error:"Check the booking details and try again."},{status:400});
- const d=parsed.data;if(d.preferredDate<new Date().toISOString().slice(0,10))return NextResponse.json({error:"Choose a future date."},{status:400});
+ const d=parsed.data;const todayWAT=new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Lagos",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());if(d.preferredDate<todayWAT)return NextResponse.json({error:"Choose a future date."},{status:400});
  try{
   const user=await getSession();const rows=await getDb()`INSERT INTO appointments(user_id,name,email,phone,service_slug,preferred_date,preferred_time,meeting_type,location,notes) VALUES(${user?.id??null},${d.name},${d.email},${d.phone},${d.serviceSlug},${d.preferredDate},${d.preferredTime},${d.meetingType},${d.location},${d.notes}) RETURNING id`;
   const adminHtml=emailLayout("New consultation booking request",paragraph("A client has requested an appointment. This is a request, not a confirmed booking.")+`<p><b>Name:</b> ${safeText(d.name)}<br><b>Email:</b> ${safeText(d.email)}<br><b>Date:</b> ${safeText(d.preferredDate)}<br><b>Time:</b> ${safeText(d.preferredTime)}<br><b>Meeting:</b> ${safeText(d.meetingType)}<br><b>Service:</b> ${safeText(d.serviceSlug||"General consultation")}</p>`);
