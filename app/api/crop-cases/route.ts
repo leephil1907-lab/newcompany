@@ -6,6 +6,15 @@ import { emailLayout, paragraph, safeText, sendEmail } from "@/lib/email";
 import { preliminaryCropTriage } from "@/lib/crop-triage";
 export const runtime="nodejs";
 const val=(form:FormData,key:string)=>String(form.get(key)||"").trim();
+// Keep in sync with MAX_PHOTO_BYTES in lib/photo-upload.ts (stays below Vercel's 4.5 MB request limit).
+const MAX_PHOTO_BYTES=4*1024*1024;
+// Identify the real image type from its file signature rather than trusting the browser-supplied MIME type.
+function detectImageType(bytes:Buffer):string|null {
+  if(bytes.length>3&&bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff) return "image/jpeg";
+  if(bytes.length>8&&bytes.subarray(0,8).equals(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a]))) return "image/png";
+  if(bytes.length>12&&bytes.toString("ascii",0,4)==="RIFF"&&bytes.toString("ascii",8,12)==="WEBP") return "image/webp";
+  return null;
+}
 export async function POST(request:Request) {
   if(!rateLimit("crop-case:"+clientKey(request),4,60_000)) return NextResponse.json({error:"Please wait before submitting another crop-health case."},{status:429});
   try {
@@ -14,9 +23,9 @@ export async function POST(request:Request) {
     if(name.length<2||name.length>120||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||location.length<2||crop.length<2||symptoms.length<10||symptoms.length>3000) return NextResponse.json({error:"Name, valid email, location, crop and a clear symptom description are required."},{status:400});
     const file=form.get("photo"); let bytes:Buffer|null=null; let mime:string|null=null; let filename:string|null=null;
     if(file instanceof File && file.size>0) {
-      if(file.size>5*1024*1024) return NextResponse.json({error:"Crop photos must be 5 MB or smaller."},{status:400});
-      if(!["image/jpeg","image/png","image/webp"].includes(file.type)) return NextResponse.json({error:"Upload a JPG, PNG or WebP crop photo."},{status:400});
-      bytes=Buffer.from(await file.arrayBuffer()); mime=file.type; filename=file.name.slice(0,180);
+      if(file.size>MAX_PHOTO_BYTES) return NextResponse.json({error:"Crop photos must be 4 MB or smaller."},{status:400});
+      bytes=Buffer.from(await file.arrayBuffer()); mime=detectImageType(bytes); filename=file.name.slice(0,180);
+      if(!mime) return NextResponse.json({error:"Upload a JPG, PNG or WebP crop photo."},{status:400});
     }
     const urgency=val(form,"urgent")==="yes"?"priority":val(form,"urgency")==="urgent"?"urgent":"standard";
     const user=await getSession(); const sql=getDb();
